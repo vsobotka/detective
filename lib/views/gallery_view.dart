@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/galler_item.dart';
+import 'widgets/gallery_item.dart';
 
 class GalleryView extends StatefulWidget {
   GalleryView({Key key, this.title}) : super(key: key);
