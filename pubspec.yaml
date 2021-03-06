@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.0
 
   pokeapi: 1.0.1
+  cached_network_image: ^2.5.0
 
 dev_dependencies:
   flutter_test:
