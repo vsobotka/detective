@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokeapi/model/pokemon/pokemon.dart';
-import 'package:pokeapi/pokeapi.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import 'widgets/galler_item.dart';
 
 class GalleryView extends StatefulWidget {
   GalleryView({Key key, this.title}) : super(key: key);
@@ -14,7 +13,7 @@ class GalleryView extends StatefulWidget {
 class _GalleryViewState extends State<GalleryView> {
   ScrollController scrollController;
   bool loading;
-  List<GalleryItem> pokemonList;
+  List<GalleryItem> galleryItemList;
   static const crossAxisCount = 3;
   static const loadCount = 2 * crossAxisCount * crossAxisCount;
 
@@ -22,10 +21,9 @@ class _GalleryViewState extends State<GalleryView> {
   void initState() {
     super.initState();
     scrollController = new ScrollController()..addListener(_scrollListener);
-    pokemonList = [];
+    galleryItemList = [];
     loading = false;
-    print(loadCount);
-    _loadMorePokemon();
+    _loadMoreItems();
   }
 
   @override
@@ -35,19 +33,18 @@ class _GalleryViewState extends State<GalleryView> {
   }
 
   void _scrollListener() {
-    print(scrollController.position.extentAfter);
     if (scrollController.position.extentAfter < 500) {
-      _loadMorePokemon();
+      _loadMoreItems();
     }
   }
 
-  void _loadMorePokemon() {
+  void _loadMoreItems() {
     if (!loading) {
       setState(() {
         loading = true;
         for (var i = 0; i < loadCount; i++) {
-          pokemonList.add(GalleryItem(
-            id: pokemonList.length + 1,
+          galleryItemList.add(GalleryItem(
+            id: galleryItemList.length + 1,
           ));
         }
         loading = false;
@@ -57,7 +54,6 @@ class _GalleryViewState extends State<GalleryView> {
 
   @override
   Widget build(BuildContext context) {
-    print(pokemonList.length);
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -67,54 +63,9 @@ class _GalleryViewState extends State<GalleryView> {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount),
-            itemCount: pokemonList.length,
+            itemCount: galleryItemList.length,
             itemBuilder: (_, index) {
-              return pokemonList[index];
+              return galleryItemList[index];
             }));
-  }
-}
-
-class GalleryItem extends StatefulWidget {
-  GalleryItem({Key key, this.id}) : super(key: key);
-  final int id;
-
-  @override
-  _GalleryItemState createState() => _GalleryItemState();
-}
-
-class _GalleryItemState extends State<GalleryItem> {
-  Image image;
-  List<Text> types;
-  String name;
-
-  @override
-  void initState() {
-    super.initState();
-    types = [];
-    name = "";
-    PokeAPI.getObject<Pokemon>(widget.id).then((poke) => {
-          setState(() => {
-            poke.types.forEach((type) => {types.add(Text(type.type.name))}),
-            name = poke.name,
-          })
-        });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: [
-      CachedNetworkImage(
-        imageUrl:
-            "https://pokeres.bastionbot.org/images/pokemon/${widget.id}.png",
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) => new Icon(Icons.error),
-      ),
-      Column(children: types),
-      Align(
-          alignment: FractionalOffset.bottomCenter,
-          child: Text(name.toUpperCase(),
-              style: TextStyle(
-                  height: 5, fontSize: 15, fontWeight: FontWeight.bold)))
-    ]);
   }
 }
