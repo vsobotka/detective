@@ -22,10 +22,14 @@ class _GalleryItemState extends State<GalleryItem> {
     types = [];
     name = "";
     PokeAPI.getObject<Pokemon>(widget.id).then((poke) => {
-          setState(() => {
-                poke.types.forEach((type) => {types.add(Text(type.type.name))}),
-                name = poke.name,
-              })
+          if (mounted)
+            {
+              setState(() => {
+                    poke.types
+                        .forEach((type) => {types.add(Text(type.type.name))}),
+                    name = poke.name,
+                  })
+            }
         });
   }
 
